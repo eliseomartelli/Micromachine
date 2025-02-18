@@ -1,7 +1,7 @@
 package micromachine
 
 import (
-	"errors"
+	"fmt"
 	"sync"
 )
 
@@ -61,7 +61,11 @@ func (sm *Micromachine[T]) Transition(to T) error {
 		sm.state = to
 		return nil
 	}
-	return errors.New("invalid state transition")
+	return fmt.Errorf(
+		"invalid state transition from '%v' to '%v'",
+		sm.state,
+		to,
+	)
 }
 
 // State returns the current state of the state machine.
