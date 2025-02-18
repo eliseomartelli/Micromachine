@@ -106,3 +106,57 @@ func TestStateMachine_TransitionWithError(t *testing.T) {
 		t.Errorf("expected state to remain %v, but got %v", Idle, sm.State())
 	}
 }
+
+func TestStateMachine_ValidTransitions(t *testing.T) {
+	sm := NewMicromachine(Idle)
+
+	// No transitions defined
+	transitions := sm.ValidTransitions()
+	if len(transitions) != 0 {
+		t.Errorf("expected 0 transitions, got %d", len(transitions))
+	}
+
+	// One transition
+	sm.AddTransition(Idle, Running, nil)
+	transitions = sm.ValidTransitions()
+	if len(transitions) != 1 {
+		t.Errorf("expected 1 transition, got %d", len(transitions))
+	}
+	if transitions[0] != Running {
+		t.Errorf("expected 'running' transition, got %v", transitions)
+	}
+
+	// Multiple transitions
+	sm.AddTransition(Idle, Stopped, nil)
+
+	transitions = sm.ValidTransitions()
+	if len(transitions) != 2 {
+		t.Errorf("expected 2 transitions, got %d", len(transitions))
+	}
+
+	containsRunning := false
+	containsStopped := false
+
+	for _, transition := range transitions {
+		if transition == Running {
+			containsRunning = true
+		} else if transition == Stopped {
+			containsStopped = true
+		}
+	}
+
+	if !containsRunning || !containsStopped {
+		t.Errorf("Expected transitions 'running' and 'stopped', got %v", transitions)
+	}
+
+	// Transitioning and checking again
+	err := sm.Transition(Running)
+	if err != nil {
+		t.Errorf("Failed transition: %v", err)
+	}
+
+	transitions = sm.ValidTransitions()
+	if len(transitions) != 0 {
+		t.Errorf("expected 0 transition after transitioning from idle, got %d", len(transitions))
+	}
+}
