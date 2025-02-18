@@ -70,3 +70,16 @@ func (sm *Micromachine[T]) State() T {
 	defer sm.mu.Unlock()
 	return sm.state
 }
+
+// ValidTransitions returns a slice of valid states that can be transitioned
+// to from the current state.
+func (sm *Micromachine[T]) ValidTransitions() []T {
+	sm.mu.Lock()
+	defer sm.mu.Unlock()
+
+	valid := make([]T, 0, len(sm.transitions[sm.state]))
+	for to := range sm.transitions[sm.state] {
+		valid = append(valid, to)
+	}
+	return valid
+}
