@@ -1,5 +1,7 @@
 # Micromachine
 
+[![Test Micromachine](https://github.com/eliseomartelli/Micromachine/actions/workflows/test.yaml/badge.svg?branch=main)](https://github.com/eliseomartelli/Micromachine/actions/workflows/test.yaml)
+
 This package provides a generic state machine implementation in Go. It allows
 you to define states and transitions between them, with optional actions that
 can be executed during transitions. The state machine is thread-safe, ensuring
