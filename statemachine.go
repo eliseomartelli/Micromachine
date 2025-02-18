@@ -5,17 +5,17 @@ import (
 	"sync"
 )
 
-// micromachine is a generic state machine that supports any comparable type
+// Micromachine is a generic state machine that supports any comparable type
 // for states.
-type micromachine[T comparable] struct {
+type Micromachine[T comparable] struct {
 	mu          sync.Mutex
 	state       T
 	transitions map[T]map[T]func() error
 }
 
 // NewMicromachine creates a new state machine with the given initial state.
-func NewMicromachine[T comparable](initialState T) *micromachine[T] {
-	return &micromachine[T]{
+func NewMicromachine[T comparable](initialState T) *Micromachine[T] {
+	return &Micromachine[T]{
 		state:       initialState,
 		transitions: make(map[T]map[T]func() error),
 	}
@@ -24,7 +24,7 @@ func NewMicromachine[T comparable](initialState T) *micromachine[T] {
 // AddTransition adds a transition from one state to another with an optional
 // action. The action is a function that will be executed during the
 // transition.
-func (sm *micromachine[T]) AddTransition(from, to T, action func() error) *micromachine[T] {
+func (sm *Micromachine[T]) AddTransition(from, to T, action func() error) *Micromachine[T] {
 	sm.mu.Lock()
 	defer sm.mu.Unlock()
 
@@ -37,7 +37,7 @@ func (sm *micromachine[T]) AddTransition(from, to T, action func() error) *micro
 
 // CanTransition checks if a transition to the given state is valid from the
 // current state.
-func (sm *micromachine[T]) CanTransition(to T) bool {
+func (sm *Micromachine[T]) CanTransition(to T) bool {
 	sm.mu.Lock()
 	defer sm.mu.Unlock()
 
@@ -48,7 +48,7 @@ func (sm *micromachine[T]) CanTransition(to T) bool {
 // Transition attempts to transition to the given state.
 // If the transition is valid and an action is defined, the action is executed.
 // Returns an error if the transition is invalid.
-func (sm *micromachine[T]) Transition(to T) error {
+func (sm *Micromachine[T]) Transition(to T) error {
 	sm.mu.Lock()
 	defer sm.mu.Unlock()
 
@@ -65,7 +65,7 @@ func (sm *micromachine[T]) Transition(to T) error {
 }
 
 // State returns the current state of the state machine.
-func (sm *micromachine[T]) State() T {
+func (sm *Micromachine[T]) State() T {
 	sm.mu.Lock()
 	defer sm.mu.Unlock()
 	return sm.state
